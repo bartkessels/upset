@@ -6,6 +6,14 @@ _Upset is a command line tool to setup any computer quickly using a YAML configu
 Are you upset every time you need to re-install your computer again? We'll I am, that's why I created this tool to setup
 any computer quickly using a simple YAML-file.
 
+## Roadmap
+
+* Ability to download files
+* Copy files from one location to another
+* Execute custom scripts
+* Write tests
+* Setup automatic pipeline
+
 ## Basic usage
 
 ```bash
