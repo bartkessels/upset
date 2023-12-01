@@ -1,0 +1,14 @@
+[package]
+name = "upset"
+version = "0.1.0"
+authors = ["Bart Kessels <development@bk-mail.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde_yaml = "0.9.27"
+serde = { version = "1.0.193", features = ["derive"] }
+clap = { version = "4.4.10", features = ["derive"] }
+indicatif = "0.17.7"
+mockall = "0.11.4"
