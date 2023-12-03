@@ -1,4 +1,5 @@
 use std::process;
+use std::sync::Arc;
 use crate::command::Command;
 
 pub struct WingetCommand;
@@ -16,5 +17,11 @@ impl Command for WingetCommand {
             .output();
 
         return Ok(command_output.is_ok_and(|output| output.status.success()));
+    }
+}
+
+impl WingetCommand {
+    pub fn new() -> Arc<dyn Command> {
+        return Arc::new(Self);
     }
 }

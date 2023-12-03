@@ -1,13 +1,24 @@
+use std::sync::Arc;
 use crate::commands::WingetCommand;
-use crate::package_manager::PackageManager;
+use crate::package_manager::package_manager::PackageManager;
 use crate::package_manager::winget_package_manager::WingetPackageManager;
+use crate::terminal::TerminalOutput;
 
-pub struct PackageManagerFactory;
+pub struct PackageManagerFactory {
+    terminal_output: Arc<dyn TerminalOutput>
+}
 
 impl PackageManagerFactory {
-    pub fn get_package_manager(name: &str, source: &str) -> Option<Box<dyn PackageManager>> {
+    pub fn new(terminal_output: &Arc<dyn TerminalOutput>) -> Arc<Self> {
+        return Arc::new(Self {
+            terminal_output: terminal_output.clone()
+        });
+    }
+
+    pub fn get_package_manager(&self, name: &str, source: &str) -> Option<Arc<dyn PackageManager>> {
         return match name.to_lowercase().as_str() {
-            "winget" => Some(WingetPackageManager::new(Box::new(WingetCommand), &source)),
+            "winget" =>
+                Some(WingetPackageManager::new(&WingetCommand::new(), &source, &self.terminal_output)),
             _ => None
         };
     }
@@ -15,17 +26,21 @@ impl PackageManagerFactory {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
     use crate::package_manager::PackageManagerFactory;
     use crate::package_manager::winget_package_manager::WingetPackageManager;
+    use crate::terminal::{MockTerminalOutput, TerminalOutput};
 
     #[test]
     fn get_package_manager_returns_none_for_empty_string() {
         // Arrange
         let name = "";
         let source = "source";
+        let terminal_output = MockTerminalOutput::new();
 
         // Act
-        let result = PackageManagerFactory::get_package_manager(name, source);
+        let sut = PackageManagerFactory::new(&(Arc::new(terminal_output) as Arc<dyn TerminalOutput>));
+        let result = sut.get_package_manager(name, source);
 
         // Assert
         assert!(result.is_none());
@@ -36,9 +51,11 @@ mod tests {
         // Arrange
         let name = "not-supported-package-manager";
         let source = "source";
+        let terminal_output = MockTerminalOutput::new();
 
         // Act
-        let result = PackageManagerFactory::get_package_manager(name, source);
+        let sut = PackageManagerFactory::new(&(Arc::new(terminal_output) as Arc<dyn TerminalOutput>));
+        let result = sut.get_package_manager(name, source);
 
         // Assert
         assert!(result.is_none());
@@ -49,9 +66,11 @@ mod tests {
         // Arrange
         let name = "winget";
         let source = "source";
+        let terminal_output = MockTerminalOutput::new();
 
         // Act
-        let result = PackageManagerFactory::get_package_manager(name, source);
+        let sut = PackageManagerFactory::new(&(Arc::new(terminal_output) as Arc<dyn TerminalOutput>));
+        let result = sut.get_package_manager(name, source);
 
         // Assert
         assert!(result.is_some());

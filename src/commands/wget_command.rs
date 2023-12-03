@@ -1,4 +1,5 @@
 use std::process;
+use std::sync::Arc;
 use crate::command::Command;
 
 pub struct WgetCommand;
@@ -16,5 +17,11 @@ impl Command for WgetCommand {
             .output();
 
         return Ok(command_output.is_ok_and(|output| output.status.success()));
+    }
+}
+
+impl WgetCommand {
+    pub fn new() -> Arc<dyn Command> {
+        return Arc::new(Self);
     }
 }
