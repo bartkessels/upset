@@ -15,9 +15,16 @@ impl FileDownloadFactory {
         });
     }
 
-    pub fn get_file_downloader(&self, name: &str, destination_folder: &str) -> Option<Arc<dyn FileDownload>> {
+    pub fn get_file_downloader(
+        &self, name: &str,
+        destination_folder: &str
+    ) -> Option<Arc<dyn FileDownload>> {
         return match name.to_lowercase().as_str() {
-            "wget" => Some(WgetFileDownload::new(&WgetCommand::new(), &destination_folder, &self.terminal_output)),
+            "wget" => Some(WgetFileDownload::new(
+                &WgetCommand::new(),
+                &destination_folder,
+                &self.terminal_output
+            )),
             _ => None
         };
     }
@@ -38,7 +45,9 @@ mod tests {
         let terminal_output_mock = MockTerminalOutput::new();
 
         // Act
-        let sut = FileDownloadFactory::new(&(Arc::new(terminal_output_mock) as Arc<dyn TerminalOutput>));
+        let sut = FileDownloadFactory::new(
+            &(Arc::new(terminal_output_mock) as Arc<dyn TerminalOutput>)
+        );
         let result = sut.get_file_downloader(name, destination_folder);
 
         // Assert
@@ -53,7 +62,9 @@ mod tests {
         let terminal_output_mock = MockTerminalOutput::new();
 
         // Act
-        let sut = FileDownloadFactory::new(&(Arc::new(terminal_output_mock) as Arc<dyn TerminalOutput>));
+        let sut = FileDownloadFactory::new(
+            &(Arc::new(terminal_output_mock) as Arc<dyn TerminalOutput>)
+        );
         let result = sut.get_file_downloader(name, destination_folder);
 
         // Assert
@@ -68,7 +79,9 @@ mod tests {
         let terminal_output_mock = MockTerminalOutput::new();
 
         // Act
-        let sut = FileDownloadFactory::new(&(Arc::new(terminal_output_mock) as Arc<dyn TerminalOutput>));
+        let sut = FileDownloadFactory::new(
+            &(Arc::new(terminal_output_mock) as Arc<dyn TerminalOutput>)
+        );
         let result = sut.get_file_downloader(name, destination_folder);
 
         // Assert

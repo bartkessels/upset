@@ -2,6 +2,7 @@ use std::process;
 use std::sync::Arc;
 use crate::command::Command;
 
+/// Wrapper around the wget command
 pub struct WgetCommand;
 
 const WGET_COMMAND: &str = "wget";

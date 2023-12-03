@@ -2,6 +2,7 @@ use std::process;
 use std::sync::Arc;
 use crate::command::Command;
 
+/// Wrapper around the Winget command
 pub struct WingetCommand;
 
 const WINGET_COMMAND: &str = "winget";

@@ -27,7 +27,11 @@ impl FileDownload for WgetFileDownload {
 }
 
 impl WgetFileDownload {
-    pub fn new(wget_command: &Arc<dyn Command>, destination_folder: &str, terminal_output: &Arc<dyn TerminalOutput>) -> Arc<dyn FileDownload> {
+    pub fn new(
+        wget_command: &Arc<dyn Command>,
+        destination_folder: &str,
+        terminal_output: &Arc<dyn TerminalOutput>
+    ) -> Arc<dyn FileDownload> {
         return Arc::new(Self {
             wget_command: wget_command.clone(),
             destination_folder: destination_folder.to_string(),
@@ -46,9 +50,13 @@ impl WgetFileDownload {
             ]);
 
         if result.is_ok_and(|output| output) {
-            self.terminal_output.finish_with_success(&format!("Successfully downloaded {}", &remote_source));
+            self.terminal_output.finish_with_success(
+                &format!("Successfully downloaded {}", &remote_source)
+            );
         } else {
-            self.terminal_output.finish_with_warning(&format!("Unable to download {}", &remote_source));
+            self.terminal_output.finish_with_warning(
+                &format!("Unable to download {}", &remote_source)
+            );
         }
     }
 }

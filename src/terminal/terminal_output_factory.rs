@@ -13,7 +13,10 @@ impl TerminalOutputFactory {
         return Arc::new(Self);
     }
 
-    pub fn get_terminal_output(&self, terminal_output_type: TerminalOutputType) -> Arc<dyn TerminalOutput> {
+    pub fn get_terminal_output(
+        &self,
+        terminal_output_type: TerminalOutputType
+    ) -> Arc<dyn TerminalOutput> {
         return match terminal_output_type {
             TerminalOutputType::Spinner => SpinnerTerminalOutput::new()
         };

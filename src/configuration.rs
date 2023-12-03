@@ -1,14 +1,14 @@
 #[derive(Debug, serde::Deserialize, PartialEq)]
 pub struct ConfigFile {
-    pub version: f64,
+    pub version: f32,
     pub configuration: Configuration
 }
 
 #[derive(Debug, serde::Deserialize, PartialEq)]
 pub struct Configuration {
-    pub packages: Vec<PackageConfiguration>,
-    pub version_control: Vec<VersionControlConfiguration>,
-    pub downloads: Vec<DownloadConfiguration>
+    pub packages: Option<Vec<PackageConfiguration>>,
+    pub version_control: Option<Vec<VersionControlConfiguration>>,
+    pub downloads: Option<Vec<DownloadConfiguration>>
 }
 
 #[derive(Debug, serde::Deserialize, PartialEq)]

@@ -15,7 +15,11 @@ impl VersionControlSystemFactory {
         });
     }
 
-    pub fn get_version_control_system(&self, name: &str, destination_folder: &str) -> Option<Arc<dyn VersionControlSystem>> {
+    pub fn get_version_control_system(
+        &self,
+        name: &str,
+        destination_folder: &str
+    ) -> Option<Arc<dyn VersionControlSystem>> {
         return match name.to_lowercase().as_str() {
             "git" => Some(GitVersionControlSystem::new(&GitCommand::new(), &destination_folder, &self.terminal_output)),
             _ => None
@@ -38,7 +42,9 @@ mod tests {
         let terminal_output = Arc::new(MockTerminalOutput::default());
 
         // Act
-        let sut = VersionControlSystemFactory::new(&(terminal_output as Arc<dyn TerminalOutput>));
+        let sut = VersionControlSystemFactory::new(
+            &(terminal_output as Arc<dyn TerminalOutput>)
+        );
         let result = sut.get_version_control_system(name, destination_folder);
 
         // Assert
@@ -53,7 +59,9 @@ mod tests {
         let terminal_output = Arc::new(MockTerminalOutput::default());
 
         // Act
-        let sut = VersionControlSystemFactory::new(&(terminal_output as Arc<dyn TerminalOutput>));
+        let sut = VersionControlSystemFactory::new(
+            &(terminal_output as Arc<dyn TerminalOutput>)
+        );
         let result = sut.get_version_control_system(name, destination_folder);
 
         // Assert
@@ -68,7 +76,9 @@ mod tests {
         let terminal_output = Arc::new(MockTerminalOutput::default());
 
         // Act
-        let sut = VersionControlSystemFactory::new(&(terminal_output as Arc<dyn TerminalOutput>));
+        let sut = VersionControlSystemFactory::new(
+            &(terminal_output as Arc<dyn TerminalOutput>)
+        );
         let result = sut.get_version_control_system(name, destination_folder);
 
         // Assert

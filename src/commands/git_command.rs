@@ -2,6 +2,7 @@ use std::process;
 use std::sync::Arc;
 use crate::command::Command;
 
+/// Wrapper around the git command
 pub struct GitCommand;
 
 const GIT_COMMAND: &str = "git";

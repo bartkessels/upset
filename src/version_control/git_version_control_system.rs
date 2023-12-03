@@ -28,7 +28,11 @@ impl VersionControlSystem for GitVersionControlSystem {
 }
 
 impl GitVersionControlSystem {
-    pub fn new(git_command: &Arc<dyn Command>, destination_folder: &str, terminal_output: &Arc<dyn TerminalOutput>) -> Arc<dyn VersionControlSystem> {
+    pub fn new(
+        git_command: &Arc<dyn Command>,
+        destination_folder: &str,
+        terminal_output: &Arc<dyn TerminalOutput>
+    ) -> Arc<dyn VersionControlSystem> {
         return Arc::new(Self {
             git_command: git_command.clone(),
             _destination_folder: destination_folder.to_string(),
@@ -47,9 +51,13 @@ impl GitVersionControlSystem {
         let is_success = result.is_ok_and(|output| output);
 
         if is_success {
-            self.terminal_output.finish_with_success(&format!("Successfully cloned {}", &repository));
+            self.terminal_output.finish_with_success(
+                &format!("Successfully cloned {}", &repository)
+            );
         } else {
-            self.terminal_output.finish_with_warning(&format!("Unable to clone {}", &repository));
+            self.terminal_output.finish_with_warning(
+                &format!("Unable to clone {}", &repository)
+            );
         }
     }
 }
