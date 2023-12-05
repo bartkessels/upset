@@ -7,9 +7,9 @@ use crate::version_control::VersionControlSystemFactory;
 
 /// Parser for version 1.0.0 of the specification
 pub struct Version100Parser {
-    package_manager_factory: Arc<PackageManagerFactory>,
-    version_control_system_factory: Arc<VersionControlSystemFactory>,
-    file_download_factory: Arc<FileDownloadFactory>
+    package_manager_factory: Arc<dyn PackageManagerFactory>,
+    version_control_system_factory: Arc<dyn VersionControlSystemFactory>,
+    file_download_factory: Arc<dyn FileDownloadFactory>
 }
 
 impl Parser for Version100Parser {
@@ -30,9 +30,9 @@ impl Parser for Version100Parser {
 
 impl Version100Parser {
     pub fn new(
-        package_manager_factory: &Arc<PackageManagerFactory>,
-        version_control_system_factory: &Arc<VersionControlSystemFactory>,
-        file_download_factory: &Arc<FileDownloadFactory>
+        package_manager_factory: &Arc<dyn PackageManagerFactory>,
+        version_control_system_factory: &Arc<dyn VersionControlSystemFactory>,
+        file_download_factory: &Arc<dyn FileDownloadFactory>
     ) -> Arc<Self> {
         return Arc::new(Self {
             package_manager_factory: package_manager_factory.clone(),
@@ -78,5 +78,59 @@ impl Version100Parser {
                 download_manager.download(&remote_source.files);
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+    use crate::configuration::{Configuration, PackageConfiguration};
+    use crate::file_download::{FileDownload, FileDownloadFactory, MockFileDownload, MockFileDownloadFactory};
+    use crate::package_manager::{MockPackageManager, MockPackageManagerFactory, PackageManager, PackageManagerFactory};
+    use crate::parser::parser::Parser;
+    use crate::parser::version_100_parser::Version100Parser;
+    use crate::version_control::{MockVersionControlSystem, MockVersionControlSystemFactory, VersionControlSystem, VersionControlSystemFactory};
+
+    #[test]
+    fn parse_should_parse_the_packages_when_they_are_available() {
+        // Arrange
+        let mut mock_package_manager_factory = MockPackageManagerFactory::new();
+        let mut mock_version_control_system_factory = MockVersionControlSystemFactory::new();
+        let mut mock_file_download_factory = MockFileDownloadFactory::new();
+        let mut mock_package_manager = MockPackageManager::new();
+        let mut mock_version_control_system = MockVersionControlSystem::new();
+        let mut mock_file_download = MockFileDownload::new();
+
+        let config = Configuration {
+            packages: Some(vec!(
+                PackageConfiguration {
+                    package_manager: "winget".to_string(),
+                    source: "msstore".to_string(),
+                    applications: vec!("upset".to_string(), "ItDepends".to_string())
+                }
+            )),
+            version_control: None,
+            downloads: None
+        };
+
+        // Setup expectations
+        mock_package_manager.expect_install()
+            .once()
+            .returning(|_| {});
+
+        mock_package_manager_factory.expect_get_package_manager()
+            .returning(|t,a| Some(Arc::new(mock_package_manager) as Arc<dyn PackageManager>));
+        mock_version_control_system_factory.expect_get_version_control_system()
+            .returning(|_, _| Some(Arc::new(mock_version_control_system) as Arc<dyn VersionControlSystem>));
+        mock_file_download_factory.expect_get_file_downloader()
+            .returning(|_, _| Some(Arc::new(mock_file_download) as Arc<dyn FileDownload>));
+
+        // Act
+        let sut = Version100Parser::new(
+            &(Arc::new(mock_package_manager_factory) as Arc<dyn PackageManagerFactory>),
+            &(Arc::new(mock_version_control_system_factory) as Arc<dyn VersionControlSystemFactory>),
+            &(Arc::new(mock_file_download_factory) as Arc<dyn FileDownloadFactory>)
+        );
+        _ = sut.parse(&config);
     }
 }

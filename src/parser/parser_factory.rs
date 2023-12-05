@@ -7,16 +7,16 @@ use crate::parser::version_100_parser::Version100Parser;
 use crate::version_control::VersionControlSystemFactory;
 
 pub struct ParserFactory {
-    package_manager_factory: Arc<PackageManagerFactory>,
-    version_control_system_factory: Arc<VersionControlSystemFactory>,
-    file_download_factory: Arc<FileDownloadFactory>
+    package_manager_factory: Arc<dyn PackageManagerFactory>,
+    version_control_system_factory: Arc<dyn VersionControlSystemFactory>,
+    file_download_factory: Arc<dyn FileDownloadFactory>
 }
 
 impl ParserFactory {
     pub fn new(
-        package_manager_factory: &Arc<PackageManagerFactory>,
-        version_control_system_factory: &Arc<VersionControlSystemFactory>,
-        file_download_factory: &Arc<FileDownloadFactory>
+        package_manager_factory: &Arc<dyn PackageManagerFactory>,
+        version_control_system_factory: &Arc<dyn VersionControlSystemFactory>,
+        file_download_factory: &Arc<dyn FileDownloadFactory>
     ) -> Arc<Self> {
         return Arc::new(Self {
             package_manager_factory: package_manager_factory.clone(),
