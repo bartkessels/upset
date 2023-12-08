@@ -1,11 +1,9 @@
 use std::sync::Arc;
-use mockall::automock;
 use crate::commands::WingetCommand;
 use crate::package_manager::package_manager::PackageManager;
 use crate::package_manager::winget_package_manager::WingetPackageManager;
 use crate::terminal::TerminalOutput;
 
-#[automock]
 pub trait PackageManagerFactory {
     fn get_package_manager(&self, name: &String, source: &String) -> Option<Arc<dyn PackageManager>>;
 }
@@ -37,7 +35,6 @@ impl PackageManagerFactoryImpl {
 mod tests {
     use std::sync::Arc;
     use crate::package_manager::package_manager_factory::PackageManagerFactoryImpl;
-    use crate::package_manager::PackageManagerFactory;
     use crate::package_manager::winget_package_manager::WingetPackageManager;
     use crate::terminal::{MockTerminalOutput, TerminalOutput};
 

@@ -10,13 +10,13 @@ mod terminal;
 mod parser;
 
 use clap::Parser;
-use crate::file_download::{FileDownloadFactory, FileDownloadFactoryImpl};
+use crate::file_download::FileDownloadFactoryImpl;
 use crate::file_reader::YamlFileReader;
-use crate::package_manager::{PackageManagerFactory, PackageManagerFactoryImpl};
+use crate::package_manager::PackageManagerFactoryImpl;
 use crate::parser::ParserFactory;
 use crate::terminal::{TerminalOutputFactory, TerminalOutputFactoryImpl};
 use crate::terminal::TerminalOutputType::Spinner;
-use crate::version_control::{VersionControlSystemFactory, VersionControlSystemFactoryImpl};
+use crate::version_control::VersionControlSystemFactoryImpl;
 
 fn main() {
     let yaml_file_reader = YamlFileReader::new();

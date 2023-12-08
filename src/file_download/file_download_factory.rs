@@ -1,11 +1,9 @@
 use std::sync::Arc;
-use mockall::automock;
 use crate::commands::WgetCommand;
 use crate::file_download::file_download::FileDownload;
 use crate::file_download::wget_file_download::WgetFileDownload;
 use crate::terminal::TerminalOutput;
 
-#[automock]
 pub trait FileDownloadFactory {
     fn get_file_downloader(
         &self,
@@ -45,7 +43,7 @@ impl FileDownloadFactoryImpl {
 #[cfg(test)]
 mod tests {
     use std::sync::Arc;
-    use crate::file_download::file_download_factory::{FileDownloadFactory, FileDownloadFactoryImpl};
+    use crate::file_download::file_download_factory::FileDownloadFactoryImpl;
     use crate::file_download::wget_file_download::WgetFileDownload;
     use crate::terminal::{MockTerminalOutput, TerminalOutput};
 

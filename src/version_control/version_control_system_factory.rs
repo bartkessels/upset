@@ -1,11 +1,9 @@
 use std::sync::Arc;
-use mockall::automock;
 use crate::commands::GitCommand;
 use crate::terminal::TerminalOutput;
 use crate::version_control::git_version_control_system::GitVersionControlSystem;
 use crate::version_control::version_control_system::VersionControlSystem;
 
-#[automock]
 pub trait VersionControlSystemFactory {
     fn get_version_control_system(
         &self,
@@ -45,7 +43,6 @@ mod tests {
     use crate::terminal::{MockTerminalOutput, TerminalOutput};
     use crate::version_control::git_version_control_system::GitVersionControlSystem;
     use crate::version_control::version_control_system_factory::VersionControlSystemFactoryImpl;
-    use crate::version_control::VersionControlSystemFactory;
 
     #[test]
     fn get_version_control_system_returns_none_for_empty_string() {

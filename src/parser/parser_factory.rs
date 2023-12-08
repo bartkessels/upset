@@ -37,3 +37,101 @@ impl ParserFactory {
         return Err("Unsupported specification version")
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+    use crate::configuration::{ConfigFile, Configuration};
+    use crate::file_download::{FileDownload, FileDownloadFactory, MockFileDownload};
+    use crate::package_manager::{MockPackageManager, PackageManager, PackageManagerFactory};
+    use crate::parser::ParserFactory;
+    use crate::parser::version_100_parser::Version100Parser;
+    use crate::version_control::{MockVersionControlSystem, VersionControlSystem, VersionControlSystemFactory};
+
+    struct MockPackageManagerFactory { package_manager: Arc<dyn PackageManager> }
+    struct MockVersionControlSystemFactory { version_control: Arc<dyn VersionControlSystem> }
+    struct MockFileDownloadFactory { file_download: Arc<dyn FileDownload> }
+
+    #[test]
+    fn get_parser_should_return_version100_for_version_100() {
+        // Arrange
+        let config_file = ConfigFile {
+            version: 1.0,
+            configuration: Configuration {
+                packages: None,
+                version_control: None,
+                downloads: None,
+            }
+        };
+
+        let mock_package_manager = MockPackageManager::new();
+        let mock_version_control_system = MockVersionControlSystem::new();
+        let mock_file_download = MockFileDownload::new();
+
+        let mock_package_manager_factory = MockPackageManagerFactory { package_manager: Arc::new(mock_package_manager) };
+        let mock_version_control_system_factory = MockVersionControlSystemFactory { version_control: Arc::new(mock_version_control_system) };
+        let mock_file_download_factory = MockFileDownloadFactory { file_download: Arc::new(mock_file_download) };
+
+        // Assert
+        let sut = ParserFactory::new(
+            &(Arc::new(mock_package_manager_factory) as Arc<dyn PackageManagerFactory>),
+            &(Arc::new(mock_version_control_system_factory) as Arc<dyn VersionControlSystemFactory>),
+            &(Arc::new(mock_file_download_factory) as Arc<dyn FileDownloadFactory>)
+        );
+        let result = sut.get_parser(&config_file);
+
+        // Assert
+        assert!(result.is_ok());
+        assert!(result.unwrap().as_any().is::<Version100Parser>());
+    }
+
+    #[test]
+    fn get_parser_should_return_err_for_unsupported_version() {
+        // Arrange
+        let config_file = ConfigFile {
+            version: -1.0,
+            configuration: Configuration {
+                packages: None,
+                version_control: None,
+                downloads: None,
+            }
+        };
+
+        let mock_package_manager = MockPackageManager::new();
+        let mock_version_control_system = MockVersionControlSystem::new();
+        let mock_file_download = MockFileDownload::new();
+
+        let mock_package_manager_factory = MockPackageManagerFactory { package_manager: Arc::new(mock_package_manager) };
+        let mock_version_control_system_factory = MockVersionControlSystemFactory { version_control: Arc::new(mock_version_control_system) };
+        let mock_file_download_factory = MockFileDownloadFactory { file_download: Arc::new(mock_file_download) };
+
+        // Assert
+        let sut = ParserFactory::new(
+            &(Arc::new(mock_package_manager_factory) as Arc<dyn PackageManagerFactory>),
+            &(Arc::new(mock_version_control_system_factory) as Arc<dyn VersionControlSystemFactory>),
+            &(Arc::new(mock_file_download_factory) as Arc<dyn FileDownloadFactory>)
+        );
+        let result = sut.get_parser(&config_file);
+
+        // Assert
+        assert!(result.is_err());
+    }
+
+    impl PackageManagerFactory for MockPackageManagerFactory {
+        fn get_package_manager(&self, _: &String, _: &String) -> Option<Arc<dyn PackageManager>> {
+            Some(self.package_manager.clone())
+        }
+    }
+
+    impl VersionControlSystemFactory for MockVersionControlSystemFactory {
+        fn get_version_control_system(&self, _: &str, _: &str) -> Option<Arc<dyn VersionControlSystem>> {
+            Some(self.version_control.clone())
+        }
+    }
+
+    impl FileDownloadFactory for MockFileDownloadFactory {
+        fn get_file_downloader(&self, _: &str, _: &str) -> Option<Arc<dyn FileDownload>> {
+            Some(self.file_download.clone())
+        }
+    }
+}
