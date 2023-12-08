@@ -4,18 +4,20 @@ use crate::terminal::TerminalOutput;
 use crate::version_control::git_version_control_system::GitVersionControlSystem;
 use crate::version_control::version_control_system::VersionControlSystem;
 
-pub struct VersionControlSystemFactory {
+pub trait VersionControlSystemFactory {
+    fn get_version_control_system(
+        &self,
+        name: &str,
+        destination_folder: &str
+    ) -> Option<Arc<dyn VersionControlSystem>>;
+}
+
+pub struct VersionControlSystemFactoryImpl {
     terminal_output: Arc<dyn TerminalOutput>
 }
 
-impl VersionControlSystemFactory {
-    pub fn new(terminal_output: &Arc<dyn TerminalOutput>) -> Arc<Self> {
-        return Arc::new(Self {
-            terminal_output: terminal_output.clone()
-        });
-    }
-
-    pub fn get_version_control_system(
+impl VersionControlSystemFactory for VersionControlSystemFactoryImpl {
+    fn get_version_control_system(
         &self,
         name: &str,
         destination_folder: &str
@@ -27,12 +29,20 @@ impl VersionControlSystemFactory {
     }
 }
 
+impl VersionControlSystemFactoryImpl {
+    pub fn new(terminal_output: &Arc<dyn TerminalOutput>) -> Arc<dyn VersionControlSystemFactory> {
+        return Arc::new(Self {
+            terminal_output: terminal_output.clone()
+        });
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::sync::Arc;
     use crate::terminal::{MockTerminalOutput, TerminalOutput};
     use crate::version_control::git_version_control_system::GitVersionControlSystem;
-    use crate::version_control::VersionControlSystemFactory;
+    use crate::version_control::version_control_system_factory::VersionControlSystemFactoryImpl;
 
     #[test]
     fn get_version_control_system_returns_none_for_empty_string() {
@@ -42,7 +52,7 @@ mod tests {
         let terminal_output = Arc::new(MockTerminalOutput::default());
 
         // Act
-        let sut = VersionControlSystemFactory::new(
+        let sut = VersionControlSystemFactoryImpl::new(
             &(terminal_output as Arc<dyn TerminalOutput>)
         );
         let result = sut.get_version_control_system(name, destination_folder);
@@ -59,7 +69,7 @@ mod tests {
         let terminal_output = Arc::new(MockTerminalOutput::default());
 
         // Act
-        let sut = VersionControlSystemFactory::new(
+        let sut = VersionControlSystemFactoryImpl::new(
             &(terminal_output as Arc<dyn TerminalOutput>)
         );
         let result = sut.get_version_control_system(name, destination_folder);
@@ -76,7 +86,7 @@ mod tests {
         let terminal_output = Arc::new(MockTerminalOutput::default());
 
         // Act
-        let sut = VersionControlSystemFactory::new(
+        let sut = VersionControlSystemFactoryImpl::new(
             &(terminal_output as Arc<dyn TerminalOutput>)
         );
         let result = sut.get_version_control_system(name, destination_folder);

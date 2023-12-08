@@ -1,6 +1,8 @@
 use std::any::Any;
+use mockall::automock;
 
 /// Public methods to call on a specific package manager
+#[automock]
 pub trait PackageManager {
     /// Install an application
     fn install(&self, applications: &Vec<String>);

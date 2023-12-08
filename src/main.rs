@@ -10,23 +10,23 @@ mod terminal;
 mod parser;
 
 use clap::Parser;
-use crate::file_download::FileDownloadFactory;
+use crate::file_download::FileDownloadFactoryImpl;
 use crate::file_reader::YamlFileReader;
-use crate::package_manager::PackageManagerFactory;
+use crate::package_manager::PackageManagerFactoryImpl;
 use crate::parser::ParserFactory;
-use crate::terminal::TerminalOutputFactory;
+use crate::terminal::{TerminalOutputFactory, TerminalOutputFactoryImpl};
 use crate::terminal::TerminalOutputType::Spinner;
-use crate::version_control::VersionControlSystemFactory;
+use crate::version_control::VersionControlSystemFactoryImpl;
 
 fn main() {
     let yaml_file_reader = YamlFileReader::new();
 
-    let terminal_output_factory = TerminalOutputFactory::new();
+    let terminal_output_factory = TerminalOutputFactoryImpl::new();
     let terminal_output = terminal_output_factory.get_terminal_output(Spinner);
 
-    let package_manager_factory = PackageManagerFactory::new(&terminal_output);
-    let version_control_system_factory = VersionControlSystemFactory::new(&terminal_output);
-    let file_download_factory = FileDownloadFactory::new(&terminal_output);
+    let package_manager_factory = PackageManagerFactoryImpl::new(&terminal_output);
+    let version_control_system_factory = VersionControlSystemFactoryImpl::new(&terminal_output);
+    let file_download_factory = FileDownloadFactoryImpl::new(&terminal_output);
     let parser_factory = ParserFactory::new(
         &package_manager_factory,
         &version_control_system_factory,

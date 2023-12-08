@@ -4,18 +4,20 @@ use crate::file_download::file_download::FileDownload;
 use crate::file_download::wget_file_download::WgetFileDownload;
 use crate::terminal::TerminalOutput;
 
-pub struct FileDownloadFactory {
+pub trait FileDownloadFactory {
+    fn get_file_downloader(
+        &self,
+        name: &str,
+        destination_folder: &str
+    ) -> Option<Arc<dyn FileDownload>>;
+}
+
+pub struct FileDownloadFactoryImpl {
     terminal_output: Arc<dyn TerminalOutput>
 }
 
-impl FileDownloadFactory {
-    pub fn new(terminal_output: &Arc<dyn TerminalOutput>) -> Arc<Self> {
-        return Arc::new(Self {
-            terminal_output: terminal_output.clone()
-        });
-    }
-
-    pub fn get_file_downloader(
+impl FileDownloadFactory for FileDownloadFactoryImpl {
+    fn get_file_downloader(
         &self, name: &str,
         destination_folder: &str
     ) -> Option<Arc<dyn FileDownload>> {
@@ -30,10 +32,18 @@ impl FileDownloadFactory {
     }
 }
 
+impl FileDownloadFactoryImpl {
+    pub fn new(terminal_output: &Arc<dyn TerminalOutput>) -> Arc<dyn FileDownloadFactory> {
+        return Arc::new(Self {
+            terminal_output: terminal_output.clone()
+        });
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::sync::Arc;
-    use crate::file_download::file_download_factory::FileDownloadFactory;
+    use crate::file_download::file_download_factory::FileDownloadFactoryImpl;
     use crate::file_download::wget_file_download::WgetFileDownload;
     use crate::terminal::{MockTerminalOutput, TerminalOutput};
 
@@ -45,7 +55,7 @@ mod tests {
         let terminal_output_mock = MockTerminalOutput::new();
 
         // Act
-        let sut = FileDownloadFactory::new(
+        let sut = FileDownloadFactoryImpl::new(
             &(Arc::new(terminal_output_mock) as Arc<dyn TerminalOutput>)
         );
         let result = sut.get_file_downloader(name, destination_folder);
@@ -62,7 +72,7 @@ mod tests {
         let terminal_output_mock = MockTerminalOutput::new();
 
         // Act
-        let sut = FileDownloadFactory::new(
+        let sut = FileDownloadFactoryImpl::new(
             &(Arc::new(terminal_output_mock) as Arc<dyn TerminalOutput>)
         );
         let result = sut.get_file_downloader(name, destination_folder);
@@ -79,7 +89,7 @@ mod tests {
         let terminal_output_mock = MockTerminalOutput::new();
 
         // Act
-        let sut = FileDownloadFactory::new(
+        let sut = FileDownloadFactoryImpl::new(
             &(Arc::new(terminal_output_mock) as Arc<dyn TerminalOutput>)
         );
         let result = sut.get_file_downloader(name, destination_folder);
